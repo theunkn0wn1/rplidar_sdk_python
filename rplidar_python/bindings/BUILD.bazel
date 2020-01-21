@@ -1,0 +1,11 @@
+load("//third_party/pybind11_bazel:build_defs.bzl", "pybind_extension")
+
+pybind_extension(
+    name = "rplidar_sdk_bindings",
+    srcs = glob(["*.cpp"]),
+    includes = ["."],
+
+    visibility = ["//src/python:__pkg__"],
+    deps = [
+    ],
+)
