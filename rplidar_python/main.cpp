@@ -1,5 +1,5 @@
 #include <Python.h>
-
+#include <rplidar.h>
 // This is the definition of a method
 static PyObject *division(PyObject *self, PyObject *args) {
   long dividend, divisor;
@@ -18,7 +18,6 @@ PyMethodDef method_table[] = {
     {"division", (PyCFunction)division, METH_VARARGS, "Method docstring"},
     {nullptr, nullptr, 0, nullptr} // Sentinel value ending the table
 };
-
 // A struct contains the definition of a module
 PyModuleDef rplidar_python_module = {
     PyModuleDef_HEAD_INIT,
