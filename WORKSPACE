@@ -35,3 +35,13 @@ py_repositories()
 load("@rules_python//python:pip.bzl", "pip_repositories")
 
 pip_repositories()
+
+
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+
+git_repository(
+    name = r"rp_lidar",
+    commit = r"5438c00be023cb477c9b26b85428184df6632055",
+    remote = r"https://github.com/theunkn0wn1/rplidar_sdk.git"
+)
+
