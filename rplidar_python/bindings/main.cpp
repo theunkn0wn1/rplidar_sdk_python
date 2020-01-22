@@ -1,9 +1,8 @@
 
 #include "main.h"
-#include <iostream>
+#include <hal/types.h>
 #include <rplidar.h>
 #include <rplidar_driver.h>
-
 class Lidar {
 private:
   rp::standalone::rplidar::RPlidarDriver *_driver = nullptr;
@@ -58,25 +57,47 @@ public:
     return py::make_tuple(result, info);
   }
 
-  std::vector<pybind11::tuple> read()
-  {
-    this->assert_driver();
+    py::list read() {
+      this->assert_driver();
 
-    std::vector<pybind11::tuple> points[1024];
-    this->_driver->startScan(false, true);
-  }
+      py::list points;
+      std::array<rplidar_response_measurement_node_hq_t,
+      rp::standalone::rplidar::RPlidarDriver::MAX_SCAN_NODES> nodes = {};
+
+      this->_driver->startScan(false, true);
+      this->start_motor();
+      size_t max_nodes = nodes.size();
+      auto scan_result = this->_driver->grabScanDataHq(nodes.data(),
+      max_nodes); this->stop_motor();
+
+      if (IS_FAIL(scan_result)) {
+        throw std::runtime_error("scan failed!");
+      }
+      this->_driver->ascendScanData(nodes.data(), max_nodes);
+
+      // convert to a python tupple
+      for (const auto &node : nodes) {
+        points.append(pybind11::make_tuple(node.angle_z_q14, node.dist_mm_q2,
+                                              node.flag, node.quality));
+      }
+      return points;
+    }
 };
 
 PYBIND11_MODULE(rplidar_sdk, module) {
   module.doc() = "module docstring is modular";
   module.def("add", &add, "function for adding two integers");
+  module.def("is_ok", &is_ok, "returns whether the rplidar return is OK");
+  module.def("is_fail", &is_fail,
+             "returns whether the rplidar return is a FAIL");
   py::class_<Lidar>(module, "LidarDriver")
       .def(py::init())
-      .def("is_connnected", &Lidar::is_connected)
+      .def("is_connected", &Lidar::is_connected)
       .def("start_motor", &Lidar::start_motor)
       .def("stop_motor", &Lidar::stop_motor)
       .def("connect", &Lidar::connect)
       .def("disconnect", &Lidar::disconnect)
+      .def("read", &Lidar::read)
       .def("get_device_info", &Lidar::get_device_info);
   py::class_<rplidar_response_device_info_t>(module, "DeviceInfo")
       .def_readonly("model", &rplidar_response_device_info_t::model)
@@ -88,3 +109,9 @@ PYBIND11_MODULE(rplidar_sdk, module) {
 
       ;
 }
+/// Thin wrapper around the IS_OK preprocessor directive
+/// \param value to check
+/// \return if the value is OK or not according to rplidar
+bool is_ok(uint32_t value) { return IS_OK(value); }
+
+bool is_fail(uint32_t value) { return IS_FAIL(value); }
