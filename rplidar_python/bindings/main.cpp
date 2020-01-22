@@ -82,7 +82,7 @@ public:
     }
 };
 
-PYBIND11_MODULE(rplidar_sdk, module) {
+PYBIND11_MODULE(_rplidar_sdk, module) {
   module.doc() = "module docstring is modular";
   module.def("add", &add, "function for adding two integers");
   module.def("is_ok", &is_ok, "returns whether the rplidar return is OK");
@@ -107,7 +107,8 @@ PYBIND11_MODULE(rplidar_sdk, module) {
 
       ;
 }
-/// Thin wrapper around the IS_OK preprocessor directive
+/// Thin wrapper around the IS_OK preprocessor directive as it is a lvalue
+/// and we can only bind rvalues
 /// \param value to check
 /// \return if the value is OK or not according to rplidar
 bool is_ok(uint32_t value) { return IS_OK(value); }
