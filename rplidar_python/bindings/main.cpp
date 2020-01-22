@@ -1,43 +1,90 @@
-#include <Python.h>
+
+#include "main.h"
+#include <iostream>
 #include <rplidar.h>
-// This is the definition of a method
-static PyObject *division(PyObject *self, PyObject *args) {
-  long dividend, divisor;
-  if (!PyArg_ParseTuple(args, "ll", &dividend, &divisor)) {
-    return nullptr;
-  }
-  if (0 == divisor) {
-    PyErr_Format(PyExc_ZeroDivisionError, "Dividing %d by zero!", dividend);
-    return nullptr;
-  }
-  return PyLong_FromLong(dividend / divisor);
-}
-static PyObject *create_Driver(PyObject *self, PyObject *args) {
-  rp::standalone::rplidar::RPlidarDriver::CreateDriver();
+#include <rplidar_driver.h>
 
-  Py_RETURN_NONE;
-}
-// Exported methods are collected in a table
-PyMethodDef method_table[] = {
-    {"division", (PyCFunction)division, METH_VARARGS, "Method docstring"},
-    {"create_driver", (PyCFunction)create_Driver, METH_VARARGS,
-     "create a driver"},
-    {nullptr, nullptr, 0, nullptr} // Sentinel value ending the table
-};
-// A struct contains the definition of a module
-PyModuleDef rplidar_python_module = {
-    PyModuleDef_HEAD_INIT,
-    "rplidar_sdk", // Module name
-    "This is the module docstring",
-    -1, // Optional size of the module state memory
-    method_table,
-    nullptr, // Optional slot definitions
-    nullptr, // Optional traversal function
-    nullptr, // Optional clear function
-    nullptr  // Optional module deallocation function
+class Lidar {
+private:
+  rp::standalone::rplidar::RPlidarDriver *_driver = nullptr;
+
+public:
+  ~Lidar() {
+    if (this->_driver == nullptr) {
+      return; // nothing to be done
+    }
+    rp::standalone::rplidar::RPlidarDriver::DisposeDriver(this->_driver);
+    this->_driver = nullptr;
+  }
+  Lidar() {
+    this->_driver = rp::standalone::rplidar::RPlidarDriver::CreateDriver();
+  }
+  bool is_connected() {
+    if (this->_driver == nullptr) {
+      return false;
+    }
+    return this->_driver->isConnected();
+  }
+  uint32_t start_motor() {
+    this->assert_driver();
+    return this->_driver->startMotor();
+  }
+  uint32_t stop_motor() {
+    this->assert_driver();
+
+    return this->_driver->stopMotor();
+  }
+  void assert_driver() const {
+    if (_driver == nullptr) {
+      throw std::runtime_error("_driver was nullptr");
+    }
+  }
+
+  uint32_t connect(const std::string &port, uint32_t baud, uint32_t flags = 0) {
+    this->assert_driver();
+    return this->_driver->connect(port.c_str(), baud, flags);
+  }
+
+  void disconnect() {
+    this->assert_driver();
+    this->_driver->disconnect();
+  }
+
+  pybind11::tuple get_device_info() {
+    this->assert_driver();
+    uint32_t result;
+    rplidar_response_device_info_t info = {};
+    result = this->_driver->getDeviceInfo(info);
+    return py::make_tuple(result, info);
+  }
+
+  std::vector<pybind11::tuple> read()
+  {
+    this->assert_driver();
+
+    std::vector<pybind11::tuple> points[1024];
+    this->_driver->startScan(false, true);
+  }
 };
 
-// The module init function
-PyMODINIT_FUNC PyInit_rplidar_sdk(void) {
-  return PyModule_Create(&rplidar_python_module);
+PYBIND11_MODULE(rplidar_sdk, module) {
+  module.doc() = "module docstring is modular";
+  module.def("add", &add, "function for adding two integers");
+  py::class_<Lidar>(module, "LidarDriver")
+      .def(py::init())
+      .def("is_connnected", &Lidar::is_connected)
+      .def("start_motor", &Lidar::start_motor)
+      .def("stop_motor", &Lidar::stop_motor)
+      .def("connect", &Lidar::connect)
+      .def("disconnect", &Lidar::disconnect)
+      .def("get_device_info", &Lidar::get_device_info);
+  py::class_<rplidar_response_device_info_t>(module, "DeviceInfo")
+      .def_readonly("model", &rplidar_response_device_info_t::model)
+      .def_readonly("firmware_version",
+                    &rplidar_response_device_info_t::firmware_version)
+      .def_readonly("hardware_version",
+                    &rplidar_response_device_info_t::hardware_version)
+      .def_readonly("serialnum", &rplidar_response_device_info_t::serialnum)
+
+      ;
 }
