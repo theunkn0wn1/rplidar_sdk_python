@@ -55,31 +55,32 @@ public:
     return py::make_tuple(result, info);
   }
 
-    py::list read() {
-      this->assert_driver();
+  py::list read() {
+    this->assert_driver();
 
-      py::list points;
-      std::array<rplidar_response_measurement_node_hq_t,
-      rp::standalone::rplidar::RPlidarDriver::MAX_SCAN_NODES> nodes = {};
+    py::list points;
+    std::array<rplidar_response_measurement_node_hq_t,
+               rp::standalone::rplidar::RPlidarDriver::MAX_SCAN_NODES>
+        nodes = {};
 
-      this->_driver->startScan(false, true);
-      this->start_motor();
-      size_t max_nodes = nodes.size();
-      auto scan_result = this->_driver->grabScanDataHq(nodes.data(),
-      max_nodes); this->stop_motor();
+    this->_driver->startScan(false, true);
+    this->start_motor();
+    size_t max_nodes = nodes.size();
+    auto scan_result = this->_driver->grabScanDataHq(nodes.data(), max_nodes);
+    this->stop_motor();
 
-      if (IS_FAIL(scan_result)) {
-        throw std::runtime_error("scan failed!");
-      }
-      this->_driver->ascendScanData(nodes.data(), max_nodes);
-
-      // convert to a python tupple
-      for (const auto &node : nodes) {
-        points.append(pybind11::make_tuple(node.angle_z_q14, node.dist_mm_q2,
-                                              node.flag, node.quality));
-      }
-      return points;
+    if (IS_FAIL(scan_result)) {
+      throw std::runtime_error("scan failed!");
     }
+    this->_driver->ascendScanData(nodes.data(), max_nodes);
+
+    // convert to a python tupple
+    for (const auto &node : nodes) {
+      points.append(pybind11::make_tuple(node.angle_z_q14, node.dist_mm_q2,
+                                         node.flag, node.quality));
+    }
+    return points;
+  }
 };
 
 PYBIND11_MODULE(_rplidar_sdk, module) {
