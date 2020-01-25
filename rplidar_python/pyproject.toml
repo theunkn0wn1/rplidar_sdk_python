@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "rplidar_sdk"
 version = "0.1.0"
-description = ""
-authors = ["Your Name <you@example.com>"]
+description = "Python wrappers around the Slamtek C++ rplidar driver"
+authors = ["Joshua Salzedo <thhunkn0wnd@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
