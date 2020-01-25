@@ -6,8 +6,12 @@ pybind_extension(
         "*.cpp",
         "*.h",
     ]),
-    visibility = ["//src/python:__pkg__"],
+    visibility = ["//rplidar_python:__pkg__"],
     deps = [
         "@rp_lidar//sdk/sdk:rplidar_driver",
     ],
 )
+
+exports_files([
+    "rplidar_sdk.py",
+])

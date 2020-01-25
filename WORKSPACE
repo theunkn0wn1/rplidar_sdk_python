@@ -4,7 +4,6 @@ load("//third_party/pybind11_bazel:python_configure.bzl", "python_configure")
 
 python_configure(name = "local_config_python")
 
-
 # Create pybind11 external repository
 # If using another pybind11 version:
 # Use tar URL of desired version, change strip_prefix to your version "pybind11-x.x.x",
@@ -36,12 +35,24 @@ load("@rules_python//python:pip.bzl", "pip_repositories")
 
 pip_repositories()
 
-
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
 git_repository(
-    name = r"rp_lidar",
-    commit = r"5438c00be023cb477c9b26b85428184df6632055",
-    remote = r"https://github.com/theunkn0wn1/rplidar_sdk.git"
+    name = "rp_lidar",
+    commit = "5438c00be023cb477c9b26b85428184df6632055",
+    remote = "https://github.com/theunkn0wn1/rplidar_sdk.git",
 )
 
+http_archive(
+    name = "io_bazel_rules_wheel",
+    sha256 = "89693425c2c81e31b9956670a9b0adc5a6fe8aa8",
+    strip_prefix = "rules_wheel-89693425c2c81e31b9956670a9b0adc5a6fe8aa8",
+    urls = ["https://github.com/georgeliaw/rules_wheel/archive/89693425c2c81e31b9956670a9b0adc5a6fe8aa8.tar.gz"],
+)
+
+git_repository(
+    name = "io_bazel_rules_wheel",
+    commit = "89693425c2c81e31b9956670a9b0adc5a6fe8aa8",
+    remote = "https://github.com/georgeliaw/rules_wheel.git",
+    shallow_since = "1551369477 -0800",
+)
