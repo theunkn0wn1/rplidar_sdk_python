@@ -84,8 +84,7 @@ public:
 };
 
 PYBIND11_MODULE(_rplidar_sdk, module) {
-  module.doc() = "module docstring is modular";
-  module.def("add", &add, "function for adding two integers");
+  module.doc() = "Python bindings to the RPLIDAR C++ sdk";
   module.def("is_ok", &is_ok, "returns whether the rplidar return is OK");
   module.def("is_fail", &is_fail,
              "returns whether the rplidar return is a FAIL");

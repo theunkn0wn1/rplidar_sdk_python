@@ -8,6 +8,7 @@ filegroup(
 filegroup(
     name = "_python_sources",
     srcs = [
+        "//rplidar_python/bindings:_rplidar_sdk.pyi",
         "//rplidar_python/bindings:rplidar_sdk.py",
     ],
 )
@@ -24,7 +25,7 @@ genrule(
     BASE_DIR=$$(pwd)
     mkdir $(@D)/tmp &&
     mkdir $(@D)/tmp/rplidar_sdk &&
-    cp $(location :_python_sources) $(@D)/tmp/rplidar_sdk &&
+    cp $(locations :_python_sources) $(@D)/tmp/rplidar_sdk &&
     cp $(location :_native_extension) $(@D)/tmp/rplidar_sdk &&
     cp $(location pyproject.toml) $(@D)/tmp &&
     touch $(@D)/tmp/rplidar_sdk/__init__.py &&
