@@ -6,4 +6,4 @@
 	url = https://github.com/pybind/pybind11.git
 [submodule "third_party/rplidar_sdk"]
 	path = third_party/rplidar_sdk
-	url = https://github.com/Slamtec/rplidar_sdk.git
+	url = https://github.com/theunkn0wn1/rplidar_sdk.git
