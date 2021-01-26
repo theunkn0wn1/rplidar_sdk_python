@@ -1,6 +1,5 @@
 
 #include "main.h"
-
 class Lidar {
 private:
   rp::standalone::rplidar::RPlidarDriver *_driver = nullptr;

@@ -1,3 +1,9 @@
 [submodule "third_party/pybind11_bazel"]
 	path = third_party/pybind11_bazel
 	url = https://github.com/M-Kerr/pybind11_bazel
+[submodule "third_party/pybind11"]
+	path = third_party/pybind11
+	url = https://github.com/pybind/pybind11.git
+[submodule "third_party/rplidar_sdk"]
+	path = third_party/rplidar_sdk
+	url = https://github.com/Slamtec/rplidar_sdk.git
