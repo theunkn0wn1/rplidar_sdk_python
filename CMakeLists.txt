@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15...3.18)
 
-project(rplidar_python VERSION "0.0.1")
+project(src/rplidar_python VERSION "0.0.1")
 
 # Currently, Scikit-build does not support FindPython, so we convert the
 # provided hints ourselves.
@@ -29,8 +29,10 @@ add_subdirectory(third_party/rplidar_sdk)
 # Now we can find pybind11
 #find_package(pybind11 CONFIG REQUIRED)
 
-Python_add_library(_core MODULE rplidar_python/bindings/main.cpp rplidar_python/bindings/main.h)
-target_link_libraries(_core PUBLIC rplidar_sdk pybind11::headers pybind11::module)
+Python_add_library(_core MODULE src/rplidar_python/main.cpp src/rplidar_python/main.h)
+target_link_libraries(_core PUBLIC  pybind11::headers pybind11::module)
+target_link_libraries(_core PRIVATE rplidar_sdk)
+
 target_compile_definitions(_core PRIVATE VERSION_INFO=${PROJECT_VERSION})
-set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+
 install(TARGETS _core DESTINATION .)
