@@ -7,7 +7,6 @@ import sys
 
 try:
     from skbuild import setup
-    from setuptools import find_packages
 except ImportError:
     print(
         "Please update pip, you need pip 10 or greater,\n"
@@ -17,12 +16,12 @@ except ImportError:
     raise
 
 setup(
-    name="rplidar_python",
-    packages=find_packages(where = 'src'),
-    version="0.1.0",
-    package_dir={'': 'src'},
-    description="Bindings to the Slamtech/rplidar_sdk",
-    cmake_install_dir='src/rplidar_python',
+    name="rplidar_sdk",
+    version="0.0.2",
+    description="a minimal example package (with pybind11)",
     author="Joshua Salzedo",
-    include_package_data = True,
+    license="",
+    packages=["rplidar_python"],
+    package_dir={"": "src"},
+    cmake_install_dir="src/rplidar_python",
 )

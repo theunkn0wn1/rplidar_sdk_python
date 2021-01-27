@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.15...3.18)
 
-project(src/rplidar_python VERSION "0.0.1")
+project(src/rplidar_python VERSION "0.0.2")
 
+# satisfy the linker which throws a fit when linking against a static lib.
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # Currently, Scikit-build does not support FindPython, so we convert the
 # provided hints ourselves.
 if(SKBUILD)
@@ -31,8 +33,7 @@ add_subdirectory(third_party/rplidar_sdk)
 
 Python_add_library(_core MODULE src/rplidar_python/main.cpp src/rplidar_python/main.h)
 target_link_libraries(_core PUBLIC  pybind11::headers pybind11::module)
-target_link_libraries(_core PRIVATE rplidar_sdk)
+target_link_libraries(_core PUBLIC rplidar_sdk)
 
 target_compile_definitions(_core PRIVATE VERSION_INFO=${PROJECT_VERSION})
-
 install(TARGETS _core DESTINATION .)
