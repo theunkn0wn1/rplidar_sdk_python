@@ -5,7 +5,7 @@ description = "Python wrappers around the Slamtek C++ rplidar driver"
 authors = ["Joshua Salzedo <thhunkn0wnd@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.6"
 attrs = "*"
 
 [tool.poetry.dev-dependencies]

@@ -2,7 +2,7 @@ import typing
 
 import attr
 
-from . import _rplidar_sdk
+from . import _core as _rplidar_sdk
 
 
 class DriverError(RuntimeError):

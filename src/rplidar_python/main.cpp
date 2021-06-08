@@ -1,6 +1,5 @@
 
 #include "main.h"
-
 class Lidar {
 private:
   rp::standalone::rplidar::RPlidarDriver *_driver = nullptr;
@@ -83,7 +82,7 @@ public:
   }
 };
 
-PYBIND11_MODULE(_rplidar_sdk, module) {
+PYBIND11_MODULE(_core, module) {
   module.doc() = "Python bindings to the RPLIDAR C++ sdk";
   module.def("is_ok", &is_ok, "returns whether the rplidar return is OK");
   module.def("is_fail", &is_fail,
